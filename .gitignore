@@ -1,0 +1,49 @@
+# Data and outputs (remote, large)
+data/raw/
+data/calcium_xml/
+outputs/
+!outputs/.gitkeep
+!outputs/**/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Model artefacts
+*.pkl
+*.joblib
+*.npy
+*.npz
+
+# Local-only agent memory (not part of the public deliverable)
+CLAUDE.md
+
+# Presentation / mentor artefacts (kept out of the code repo)
+presentation/
+mentor_deepdive.html
+mentor_presentation.html
+pixel_spacing_histogram.png

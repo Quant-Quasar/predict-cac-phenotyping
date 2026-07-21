@@ -1,0 +1,9 @@
+# 14 CT perturbations for ICC stability gating.
+# Applied to CT volume + mask; PyRadiomics is re-extracted per perturbation.
+# XML-derived features bypass the gate (ICC=1 by construction).
+
+rotations_deg: [-10, -5, 5, 10]
+translations_mm:
+  x: [-5, -2, 2, 5]
+  y: [-5, -2, 2, 5]
+noise_sigma_hu: [5, 10]

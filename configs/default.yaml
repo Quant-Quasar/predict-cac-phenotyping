@@ -1,0 +1,82 @@
+# Default pipeline configuration.
+# Override per-run via Hydra-style CLI or a separate YAML.
+
+paths:
+  data_raw: data/raw
+  data_xml: data/calcium_xml
+  outputs: outputs
+
+seed: 42
+
+cohort:
+  # Patients excluded from primary analysis (dataset report).
+  exclude_pids:
+    - 12     # XML present, no DICOM
+    - 197    # XML present, no DICOM
+    - 268    # 1.5mm annotation series replaced with 3.0mm — spatial accuracy lost
+  exclude_ge_scanners: true  # 4 GE patients held out for external check
+
+resample:
+  in_plane_mm: 0.5
+  slice_mm: 3.0
+
+hu:
+  agatston_threshold: 130
+  metal_artifact_threshold: 2000  # flag patients with calcium-mask voxels > this
+  clip_min: -200
+  clip_max: 3000
+
+lesion_grouping:
+  max_inplane_dist_mm: 5.0
+  max_slice_gap: 1
+
+stability:
+  # D014: 14-perturbation set. 2 rotation magnitudes * 2 signs = 4 rotations;
+  # 2 translation magnitudes * 2 signs * 2 axes (x, y) = 8 translations;
+  # 2 noise levels = 2 perturbations. Total 14.
+  rotation_degrees: [5, 10]
+  translation_mm: [2, 5]
+  noise_sigma_hu: [5, 10]
+  background_fill_hu: -1024
+  noise_seed_multiplier: 1000   # seed = int(pid) * noise_seed_multiplier + int(sigma)
+  # D013: ICC formulation + threshold (also used by stage 5 to consume the gate).
+  icc_threshold: 0.75
+
+reduce:
+  # D019: preprocessing
+  variance_threshold: 0.01      # drop columns with sd < this BEFORE any scaling
+  yeo_johnson_skewness_fallback: 1.0  # if abs(skew) > this AFTER YJ, fall back to rank
+  combat_kernel_groups: [Qr36d/2, I30f/3]  # the 2 surviving acquisition kernels
+  # D020: redundancy clustering and PCA
+  icc_threshold: 0.75
+  r2_linkage: average           # also report ward, complete as sensitivity
+  r2_elbow_min_gap: 0.05
+  r2_fallback_distance: 0.25    # equivalent to Spearman r^2 > 0.75 cut
+  pca_cumvar: 0.85              # report 0.90 as sensitivity
+  # D021: forced characterisation
+  forced_k: 3
+
+consensus:
+  k_range: [2, 3, 4, 5, 6, 7, 8]
+  n_subsamples: 100
+  subsample_frac: 0.80
+  ci_threshold: 0.60          # Monti 2003 standard
+  algorithms: [kmeans, ward, gmm]   # D021: dropped spectral (unjustified bandwidth)
+
+gap_statistic:
+  k_range: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]   # extended from 1..8 after smoke runs
+                                                       # showed monotonic gap through k=8
+                                                       # (no plateau in original range)
+  n_bootstrap: 500            # D021: Tibshirani 2001 standard (was 50; updated 2026-06-04)
+  null_reference: pca_uniform
+
+stability_cohort:
+  # D021: sensitivity rerun cohort definition.
+  # The robust cohort excludes low_burden_flag patients; ~280 of 422.
+  robust_filter: "low_burden_flag == False"
+
+hopkins:
+  # D021: sample-size and decision thresholds for the cluster-tendency check.
+  sample_frac: 0.10           # 42 of 422 = standard 10% sample
+  cluster_tendency_threshold: 0.65
+  ambiguous_band: [0.55, 0.65]

@@ -1,0 +1,56 @@
+# PrediCT v2 Phase 2 — pip requirements
+#
+# Install order (because pyradiomics needs C extensions that conda handles
+# better than pip):
+#   1. conda activate predict_env
+#   2. conda install -c radiomics -c conda-forge pyradiomics -y
+#   3. pip install -r requirements.txt
+#   4. pip install -e .          (installs the predict package itself in
+#                                 editable mode from pyproject.toml)
+#
+# Versions are pinned to what stages 1-7 + the lesion-morphology experiment
+# have been validated against. Loosen with care.
+
+# Core numerics and dataframes
+numpy==1.24.4
+pandas==1.5.3
+scipy==1.10.1
+
+# CT volume IO + image processing
+SimpleITK==2.2.1
+pydicom==2.4.4
+opencv-python==4.8.1.78
+
+# Machine learning (PCA, k-means, Ward, GMM, ARI, etc.)
+scikit-learn==1.3.2
+
+# Statistics: FDR-BH used in stage 7 D023/D025
+statsmodels==0.14.1
+
+# Stage 5 D019 kernel harmonisation
+neuroCombat==0.2.12
+
+# Config + parallelism + progress bars
+PyYAML==6.0.1
+joblib==1.3.2
+tqdm==4.66.1
+
+# Test framework (only needed for `pytest tests/`)
+pytest==7.4.4
+pytest-cov==4.1.0
+
+# Plotting (only needed for `scripts/10_figures.py`)
+matplotlib==3.7.3
+
+# NOT INCLUDED (deliberately dropped from the older requirements.txt
+# because nothing in the codebase imports them):
+#   torch, monai            - no deep learning in the project
+#   umap-learn              - production uses PCA at D020
+#   pingouin                - we manually implemented Jonckheere-Terpstra
+#   nibabel                 - we use SimpleITK + pydicom
+#   pykwalify               - YAML is loaded directly via PyYAML
+#   matplotlib, seaborn     - no plotting scripts in the codebase yet
+#   ipykernel, jupyterlab   - no notebooks in the codebase
+#
+# If you later want plotting or notebooks, install them on demand:
+#   pip install matplotlib seaborn ipykernel jupyterlab

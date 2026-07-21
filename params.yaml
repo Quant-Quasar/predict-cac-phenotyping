@@ -1,0 +1,25 @@
+imageType:
+  Original: {}
+
+# ── PyRadiomics feature extraction — v0.5.2 full set (D026) ──────────────
+# All 7 IBSI-compliant feature families. Empty value = extract all features
+# in that class (PyRadiomics convention).
+featureClass:
+  shape:       # 14 features
+  firstorder:  # 18 features
+  glcm:        # 24 features
+  glszm:       # 16 features
+  glrlm:       # 16 features
+  ngtdm:       # 5 features
+  gldm:        # 14 features (D026)
+
+setting:
+  binWidth: 25               # HU bin width for discretisation
+  interpolator: sitkBSpline  # consistent with canonical CT resampling
+  label: 1                   # mask label value
+  geometryTolerance: 0.0001
+  correctMask: true          # correct minor mask-geometry issues silently
+  normalize: false           # CRITICAL: do not normalise CT (v0.3.0 bug lesson)
+  force2D: false             # 3D extraction throughout
+  minimumROIDimensions: 1
+  minimumROISize: 14         # H1: IBSI minimum for reliable texture features (was 1)
